@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Hola Mundo! - Django & MariaDB</title>
+    <style>
+        :root {
+            --primary: #092e20;
+            --secondary: #00796b;
+            --accent: #00e676;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-pill .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #00e676 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        p.lead {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #475569;
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .card-value {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtext {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.65rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-badge.success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .status-badge.danger {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .info-section {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #00796b, #00b074);
+            color: white;
+            text-decoration: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: scale(1.02);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--surface-hover);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            color: var(--text-main);
+        }
+
+        code {
+            background-color: rgba(0, 0, 0, 0.35);
+            padding: 0.2rem 0.45rem;
+            border-radius: 0.375rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85em;
+            color: #38bdf8;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Barra de usuario autenticado -->
+        <nav style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(8px); padding: 0.75rem 1.25rem; border-radius: 0.75rem; border: 1px solid var(--border); margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 1.25rem;">🥤</span>
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Usuario autenticado:</span>
+                    <strong style="color: #ffffff; font-size: 0.95rem; margin-left: 0.25rem;">{{ current_user.username }}</strong>
+                    {% if current_user.is_superuser %}
+                    <span style="background: rgba(230, 29, 43, 0.2); color: #ff6b77; border: 1px solid rgba(230, 29, 43, 0.4); font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 9999px; margin-left: 0.5rem; text-transform: uppercase;">Superuser</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <a href="{% url 'core:logout' %}" style="display: inline-flex; align-items: center; gap: 0.4rem; background: #e61d2b; color: white; text-decoration: none; padding: 0.45rem 0.95rem; border-radius: 0.5rem; font-size: 0.85rem; font-weight: 600; transition: background 0.2s ease;">
+                    <span>Cerrar Sesión</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+
+        <header>
+            <div class="badge-pill">
+                <span class="pulse-dot"></span>
+                Servidor Activo en Puerto {{ port }}
+            </div>
+            <h1>¡Hola Mundo!</h1>
+            <p class="lead">
+                Proyecto desarrollado en <strong>Django</strong> (última versión) conectado a un contenedor de <strong>MariaDB</strong> mediante <strong>Docker Compose</strong>.
+            </p>
+        </header>
+
+        <div class="grid">
+            <!-- Tarjeta 1: Aplicación Django -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Aplicación Web</span>
+                    <span class="card-icon">🐍</span>
+                </div>
+                <div class="card-value">Django {{ django_version }}</div>
+                <p class="card-subtext">
+                    Python {{ python_version }}<br>
+                    Puerto interno y mapeado: <code>{{ port }}</code>
+                </p>
+            </div>
+
+            <!-- Tarjeta 2: Base de Datos MariaDB -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Base de Datos</span>
+                    <span class="card-icon">🐬</span>
+                </div>
+                <div class="card-value">
+                    {% if db_status == "Conectado exitosamente" %}
+                        <span class="status-badge success">Conectado</span>
+                    {% else %}
+                        <span class="status-badge danger">Desconectado</span>
+                    {% endif %}
+                </div>
+                <p class="card-subtext">
+                    <strong>Motor:</strong> MariaDB<br>
+                    <strong>Versión:</strong> <code>{{ db_version }}</code><br>
+                    <strong>Base:</strong> <code>{{ db_name }}</code> (Host: <code>{{ db_host }}:{{ db_port }}</code>)
+                </p>
+                {% if db_error %}
+                <p class="card-subtext" style="color: var(--danger); margin-top: 0.5rem; word-break: break-all;">
+                    Error: {{ db_error }}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Tarjeta 3: Persistencia ORM -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Persistencia ORM</span>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="card-value">{{ visit_count }}</div>
+                <p class="card-subtext">
+                    Visitas registradas y almacenadas en MariaDB mediante el modelo <code>Visit</code> de Django.
+                </p>
+            </div>
+        </div>
+
+        <!-- Sección de detalles y tabla de registros -->
+        <div class="info-section">
+            <h2>📝 Historial Reciente de Visitas (MariaDB)</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Cada petición HTTP a la raíz <code>/</code> ejecuta un <code>INSERT</code> y un <code>SELECT</code> contra el servicio MariaDB en tiempo real.
+            </p>
+
+            {% if recent_visits %}
+            <table>
+                <thead>
+                    <tr>
+                        <th># ID</th>
+                        <th>Fecha y Hora</th>
+                        <th>Dirección IP</th>
+                        <th>User Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in recent_visits %}
+                    <tr>
+                        <td><code>#{{ v.id }}</code></td>
+                        <td>{{ v.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td><code>{{ v.ip_address|default:"127.0.0.1" }}</code></td>
+                        <td title="{{ v.user_agent }}">{{ v.user_agent|truncatechars:40 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="margin-top: 1rem; color: var(--text-muted);">Sin registros aún o conectando...</p>
+            {% endif %}
+
+            <div class="action-bar">
+                <button class="btn" onclick="window.location.reload();">
+                    🔄 Recargar Página y Probar Conexión
+                </button>
+                <a href="/admin/" target="_blank" class="btn btn-outline">
+                    🔐 Panel Admin de Django
+                </a>
+            </div>
+        </div>
+
+        <!-- Arquitectura y Comandos -->
+        <div class="info-section">
+            <h2>⚙️ Arquitectura Docker</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                La infraestructura consta de dos servicios orquestados en <code>docker-compose.yml</code>:
+            </p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
+                <li><code>web</code>: Contenedor con Django, Python 3.12 y cliente MariaDB (expuesto en puerto <code>8080:8080</code>).</li>
+                <li><code>db</code>: Contenedor con la imagen oficial <code>mariadb:latest</code> con volumen persistente <code>mariadb_data</code>.</li>
+                <li><code>entrypoint.sh</code>: Script que espera la disponibilidad de MariaDB y ejecuta automáticamente <code>manage.py migrate</code>.</li>
+            </ul>
+        </div>
+
+        <footer>
+            Computo en la Nube - Unidad 2 &bull; Django 6.1.1 + MariaDB Latest &bull; Puerto 8080
+        </footer>
+    </div>
+</body>
+</html>

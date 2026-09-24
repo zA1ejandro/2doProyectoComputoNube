@@ -1,0 +1,54 @@
+services:
+  # Servicio de Base de Datos: MariaDB (última versión)
+  db:
+    image: mariadb:latest
+    container_name: mariadb_server
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-mariadb_root_password}
+      MARIADB_DATABASE: ${DB_NAME:-mariadb_django}
+      MARIADB_USER: ${DB_USER:-django_user}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-django_password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-mariadb_root_password}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - django_network
+
+  # Servicio de Aplicación: Django (última versión)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django_app
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - django_network
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  django_network:
+    driver: bridge
